@@ -377,45 +377,62 @@ void selection()
 
 
 
-int main()
+int main(int argc, char** argv)
 {
     // Step 2
     /*
 	FILE* qam_in_file = fopen(QAM_PATH, "w");
 	*/
 
-    while(1)
+    // Step 6
+    // Connected mode statement
+    if (argc == 4)
     {
-        // Step 1 & Step 5
-        /*
-        selection();
-        */
+        // NEED TO ADD SECURITY WHEN WE FINISHED THE PROJECT
+        trans_trame_433MHz(argv[1],argv[2],argv[3],argv[4]);
+    }
+    // Autonomous mode statement
+    else if (argc == 0)
+    {
+        while (1)
+        {
+            // Step 1 & Step 5 & Step 6
+            /*
+            selection();
+            */
 
-        // Step 2
-        /*
-        // Setting signal to high value
-        fprintf(qam_in_file, "1");
-        fflush(qam_in_file);
-        // Setting signal to low value
-        fprintf(qam_in_file, "0");
-        fflush(qam_in_file);
-        */
+            // Step 2
+            /*
+            // Setting signal to high value
+            fprintf(qam_in_file, "1");
+            fflush(qam_in_file);
+            // Setting signal to low value
+            fprintf(qam_in_file, "0");
+            fflush(qam_in_file);
+            */
 
-        // Step 3
-        /*
-        // T1_T3
-        GPIO_1to0(1 * T_REF, 3 * T_REF);
-        // T3_T1
-        GPIO_1to0(3 * T_REF, 1 * T_REF);
-        // T1_T32
-        GPIO_1to0(1 * T_REF, 32 * T_REF);
-        */
+            // Step 3
+            /*
+            // T1_T3
+            GPIO_1to0(1 * T_REF, 3 * T_REF);
+            // T3_T1
+            GPIO_1to0(3 * T_REF, 1 * T_REF);
+            // T1_T32
+            GPIO_1to0(1 * T_REF, 32 * T_REF);
+            */
 
-        // Step 4
-        /*
-        trans_data_433MHz('2');
-        trans_data_433MHz('1');
-        trans_data_433MHz('S');
-        */
+            // Step 4
+            /*
+            trans_data_433MHz('2');
+            trans_data_433MHz('1');
+            trans_data_433MHz('S');
+            */
+        }
+    }
+
+    // Error in arguments statement
+    else
+    {
+        printf("ERROR : please enter 0 or 4 arguments for running program.\n");
     }
 }
