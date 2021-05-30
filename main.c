@@ -255,6 +255,30 @@ void GPIO_1to0(int delay1, int delay0)
     }
 }
 
+void trans_data_433MHz(char data)
+{
+    switch (data)
+    {
+        case 'S':
+            GPIO_1to0(1 * T_REF, 32 * T_REF);
+            break;
+        case '0':
+            GPIO_1to0(3 * T_REF, 1 * T_REF);
+            GPIO_1to0(3 * T_REF, 1 * T_REF);
+            break;
+        case '1':
+            GPIO_1to0(1 * T_REF, 3 * T_REF);
+            GPIO_1to0(3 * T_REF, 1 * T_REF);
+            break;
+        case '2':
+            GPIO_1to0(1 * T_REF, 3 * T_REF);
+            GPIO_1to0(1 * T_REF, 3 * T_REF);
+            break;
+        default:
+            printf("ERROR : Impossible statement with 'data' equal '%c' in function trans_data_433MHZ.\n", data);
+    }
+}
+
 int main()
 {
     // Step 2
@@ -280,11 +304,18 @@ int main()
         */
 
         // Step 3
+        /*
         // T1_T3
         GPIO_1to0(1 * T_REF, 3 * T_REF);
         // T3_T1
         GPIO_1to0(3 * T_REF, 1 * T_REF);
         // T1_T32
         GPIO_1to0(1 * T_REF, 32 * T_REF);
+        */
+
+        // Step 4
+        trans_data_433MHz('2');
+        trans_data_433MHz('1');
+        trans_data_433MHz('S');
     }
 }
