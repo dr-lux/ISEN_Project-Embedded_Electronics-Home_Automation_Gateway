@@ -25,11 +25,56 @@
 
 #define T_REF 333
 
+/*
+ * 0 | 1 | 2
+*/
+#define TRI_LOW 0
+#define TRI_MID 1
+#define TRI_HIGH 2
+typedef unsigned char TriState; 
+typedef unsigned char uchar;
+
 int pushed_button = 0;
 
 char* state_pipe_red = "0";
 char* state_pipe_green = "0";
 char* state_pipe_blue = "0";
+
+/*
+ * Blocks execution for max 3secs
+*/
+TriState check_kill()
+{
+    uchar button_value = read_button();
+    if (button_value == '1')
+    {
+        // CAN YOU KEEP THE FILEPOINT OPEN ?
+        // check if the shutdown is asked
+        uint loops = 0;
+        while (1)
+        {
+            if (loops >= 300)
+                return TRI_HIGH;
+
+            button_value = read_button();
+
+            if (button_value == '0')
+            {
+                break;
+            }
+
+            usleep(100);
+            loop++;
+        }
+
+        if ((loops * 1000000) >= 200)
+        {
+            return TRI_MID;
+        }
+
+        return TRI_LOW; // do nothing
+    }
+}
 
 void GPIO_1to0(int delay1, int delay0)
 {
@@ -396,6 +441,7 @@ int main(int argc, char** argv)
     {
         while (1)
         {
+            // check for kill or led | or call it in read_button ?
             // Step 1 & Step 5 & Step 6
             /*
             selection();
