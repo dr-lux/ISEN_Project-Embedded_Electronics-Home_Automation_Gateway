@@ -31,6 +31,141 @@ char* state_pipe_red = "0";
 char* state_pipe_green = "0";
 char* state_pipe_blue = "0";
 
+void GPIO_1to0(int delay1, int delay0)
+{
+    FILE* qam_in_file = fopen(QAM_PATH, "w");
+    if (qam_in_file != NULL)
+    {
+        // Setting signal to high value
+        fprintf(qam_in_file, "1");
+        fflush(qam_in_file);
+        usleep(delay1);
+        // Setting signal to low value
+        fprintf(qam_in_file, "0");
+        fflush(qam_in_file);
+        usleep(delay0);
+        fclose(qam_in_file);
+    }
+    else
+    {
+        printf("ERROR : Cannot open %s in function GPIO_1to0.\n", QAM_PATH);
+    }
+}
+
+void trans_data_433MHz(char data)
+{
+    switch (data)
+    {
+        case 'S':
+            GPIO_1to0(1 * T_REF, 32 * T_REF); // T1_T32
+            break;
+        case '0':
+            GPIO_1to0(3 * T_REF, 1 * T_REF); // T3_T1
+            GPIO_1to0(3 * T_REF, 1 * T_REF); // T3_T1
+            break;
+        case '1':
+            GPIO_1to0(1 * T_REF, 3 * T_REF); // T1_T3
+            GPIO_1to0(3 * T_REF, 1 * T_REF); // T3_T1
+            break;
+        case '2':
+            GPIO_1to0(1 * T_REF, 3 * T_REF); // T1_T3
+            GPIO_1to0(1 * T_REF, 3 * T_REF); // T1_T3
+            break;
+        default:
+            printf("ERROR : Bad statement with 'data' equal '%c' in function trans_data_433MHz.\n", data);
+    }
+}
+
+void trans_trame_433MHz(char house, char object, char activation, char repetition)
+{
+    int nb_repetition = atoi(repetition);
+    int repetition_cycle;
+
+    // Transmitting frame
+    for (repetition_cycle = 1 ; repetition <= nb_repetition ; repetition_cycle++)
+    {
+        // Transmitting house's address
+        switch(house)
+        {
+            case 'A':
+                trans_data_433MHz('2');
+                trans_data_433MHz('1');
+                trans_data_433MHz('1');
+                trans_data_433MHz('1');
+                break;
+            case 'B':
+                trans_data_433MHz('1');
+                trans_data_433MHz('2');
+                trans_data_433MHz('1');
+                trans_data_433MHz('1');
+                break;
+            case 'C':
+                trans_data_433MHz('1');
+                trans_data_433MHz('1');
+                trans_data_433MHz('2');
+                trans_data_433MHz('1');
+                break;
+            case 'D':
+                trans_data_433MHz('1');
+                trans_data_433MHz('1');
+                trans_data_433MHz('1');
+                trans_data_433MHz('2');
+                break;
+            default:
+                printf("ERROR : Bad statement with 'house' equal '%c' in function trans_trame_433MHz.\n", house);
+                return;
+        }
+
+        // Transmitting object's address
+        switch(object)
+        {
+            case '1':
+                trans_data_433MHz('2');
+                trans_data_433MHz('1');
+                trans_data_433MHz('1');
+                break;
+            case '2':
+                trans_data_433MHz('1');
+                trans_data_433MHz('2');
+                trans_data_433MHz('1');
+                break;
+            case '3':
+                trans_data_433MHz('1');
+                trans_data_433MHz('1');
+                trans_data_433MHz('2');
+                break;
+            default:
+                printf("ERROR : Bad statement with 'object' equal '%c' in function trans_trame_433MHz.\n", object);
+                return;
+        }
+
+        // Transmitting fixed sequence
+        trans_data_433MHz('1');
+        trans_data_433MHz('2');
+        trans_data_433MHz('1');
+        trans_data_433MHz('1');
+
+        // Transmitting activation's state
+        switch(activation)
+        {
+            // Switch off statement
+            case '0':
+                trans_data_433MHz('2');
+                break;
+                // Switch on statement
+            case '1':
+                trans_data_433MHz('1');
+                break;
+            default:
+                printf("ERROR : Bad statement with 'activation' equal '%c' in function trans_trame_433MHz.\n", activation);
+                return;
+        }
+
+        // Transmitting ending's sequence
+        trans_data_433MHz('S');
+    }
+}
+
 unsigned int read_potentiometer(void)
 {
     unsigned int value = 0;
@@ -101,11 +236,13 @@ void commande_radio(char tube_fluo, char* etat_tube_fluo)
             if (strcmp(etat_tube_fluo, "1") == 0)
             {
                 printf("Ignite the red pipe\n");
+                trans_trame_433MHz('C', '1', '1', '9');
             }
                 // Shutdown request statement
             else
             {
                 printf("Shutdown the red pipe\n");
+                trans_trame_433MHz('C', '1', '0', '9');
             }
             break;
             // Green pipe's action statement
@@ -114,11 +251,13 @@ void commande_radio(char tube_fluo, char* etat_tube_fluo)
             if (strcmp(etat_tube_fluo, "1") == 0)
             {
                 printf("Ignite the green pipe\n");
+                trans_trame_433MHz('B', '1', '1', '9');
             }
                 // Shutdown request statement
             else
             {
                 printf("Shutdown the green pipe\n");
+                trans_trame_433MHz('B', '1', '0', '9');
             }
             break;
             // Blue pipe's action statement
@@ -127,11 +266,13 @@ void commande_radio(char tube_fluo, char* etat_tube_fluo)
             if (strcmp(etat_tube_fluo, "1") == 0)
             {
                 printf("Ignite the blue pipe\n");
+                trans_trame_433MHz('A', '1', '1', '9');
             }
                 // Shutdown request statement
             else
             {
                 printf("Shutdown the blue pipe\n");
+                trans_trame_433MHz('A', '1', '0', '9');
             }
             break;
             // Error statement
@@ -219,7 +360,7 @@ void selection()
             }
             commande_radio('B', state_pipe_blue);
         }
-        // UNREACHABLE CODE
+            // UNREACHABLE CODE
         else
         {
             printf("ERROR : Bad statement of selected_color_id in function selection.\n");
@@ -234,50 +375,7 @@ void selection()
     }
 }
 
-void GPIO_1to0(int delay1, int delay0)
-{
-    FILE* qam_in_file = fopen(QAM_PATH, "w");
-    if (qam_in_file != NULL)
-    {
-        // Setting signal to high value
-        fprintf(qam_in_file, "1");
-        fflush(qam_in_file);
-        usleep(delay1);
-        // Setting signal to low value
-        fprintf(qam_in_file, "0");
-        fflush(qam_in_file);
-        usleep(delay0);
-        fclose(qam_in_file);
-    }
-    else
-    {
-        printf("ERROR : Cannot open %s in function GPIO_1to0.\n", QAM_PATH);
-    }
-}
 
-void trans_data_433MHz(char data)
-{
-    switch (data)
-    {
-        case 'S':
-            GPIO_1to0(1 * T_REF, 32 * T_REF);
-            break;
-        case '0':
-            GPIO_1to0(3 * T_REF, 1 * T_REF);
-            GPIO_1to0(3 * T_REF, 1 * T_REF);
-            break;
-        case '1':
-            GPIO_1to0(1 * T_REF, 3 * T_REF);
-            GPIO_1to0(3 * T_REF, 1 * T_REF);
-            break;
-        case '2':
-            GPIO_1to0(1 * T_REF, 3 * T_REF);
-            GPIO_1to0(1 * T_REF, 3 * T_REF);
-            break;
-        default:
-            printf("ERROR : Impossible statement with 'data' equal '%c' in function trans_data_433MHZ.\n", data);
-    }
-}
 
 int main()
 {
@@ -288,7 +386,7 @@ int main()
 
     while(1)
     {
-        // Step 1
+        // Step 1 & Step 5
         /*
         selection();
         */
@@ -314,8 +412,10 @@ int main()
         */
 
         // Step 4
+        /*
         trans_data_433MHz('2');
         trans_data_433MHz('1');
         trans_data_433MHz('S');
+        */
     }
 }
