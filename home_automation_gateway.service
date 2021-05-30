@@ -1,0 +1,12 @@
+[Unit]
+Description=Running program for home automation gateway
+
+[Service]
+User=root
+Group=root
+
+Type=simple
+ExecStart=sh /root/init_IO.sh && /root/home_automation_gateway
+
+[Install]
+WantedBy=multi-user.target
