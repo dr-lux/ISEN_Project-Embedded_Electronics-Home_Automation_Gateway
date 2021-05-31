@@ -11,7 +11,7 @@
 #include "gpios.h"
 #include "transmission.h"
 #include "leds.h"
-
+// NEED TO PRAGMA INCLUDE ???
 
 int pushed_button = 0;
 
@@ -49,21 +49,22 @@ void selection()
         selected_color_id = LED_ID_BLUE;
     }
 
-    // Pushed button statement
+    // Checking button state
     unsigned char button_state = read_button();
+
+    // Ignite all pipes statements
     if (button_state == B_STATE_ALL_ON)
     {
-        // set all leds to on
-        ignite_led(LED_PATH_RED);
-        ignite_led(LED_PATH_BLUE);
-        ignite_led(LED_PATH_GREEN);
+        trans_trame_433MHz('A', '1', '1', "9");
+        trans_trame_433MHz('B', '1', '1', "9");
+        trans_trame_433MHz('C', '1', '1', "9");
     }
+    // Shutdown all pipes statement
     else if (button_state == B_STATE_ALL_OFF)
     {
-        // set all leds off
-        shutdown_led(LED_PATH_RED);
-        shutdown_led(LED_PATH_BLUE);
-        shutdown_led(LED_PATH_GREEN);
+        trans_trame_433MHz('A', '1', '0', "9");
+        trans_trame_433MHz('B', '1', '0', "9");
+        trans_trame_433MHz('C', '1', '0', "9");
     }
     else if (button_state == B_STATE_LOW && pushed_button == 0)
     {
@@ -98,8 +99,8 @@ void selection()
             }
             commande_radio('G', state_pipe_green);
         }
-            // Invert blue pipe statement
-        else if (selected_color_id == 3)//LED_ID_BLUE)
+        // Invert blue pipe statement
+        else if (selected_color_id == 3)//LED_ID_BLUE) // NEED TO TEST THIS MACRO WHEN WE FINISHED !!!
         {
             // Switch off statement
             if (state_pipe_blue == "1")
@@ -113,15 +114,15 @@ void selection()
             }
             commande_radio('B', state_pipe_blue);
         }
-            // UNREACHABLE CODE
+        // UNREACHABLE CODE !!!
         else
         {
             printf("ERROR : Bad statement of selected_color_id in function selection.\n");
         }
-        // END UNREACHABLE CODE
+        // END UNREACHABLE CODE !!!
         pushed_button = 1; // Declare we push the button
     }
-        // Released button statement
+    // Released button statement
     else if (button_state == B_STATE_HIGH && pushed_button == 1)
     {
         pushed_button = 0; // Declare we've released the button
@@ -132,14 +133,11 @@ void selection()
 
 int main(int argc, char** argv)
 {
-    // Step 2
-    /*
 	FILE* qam_in_file = fopen(QAM_PATH, "w");
-	*/
 
     // Step 6
     // Connected mode statement
-    if (argc == 4)
+    if (argc == 5) // 4 arguments entered
     {
         // NEED TO ADD SECURITY WHEN WE FINISHED THE PROJECT
         // WARNING -> casting char* to char (argv == char[][], an array of strings)
@@ -151,9 +149,7 @@ int main(int argc, char** argv)
         while (1)
         {
             // Step 1 & Step 5 & Step 6
-            /*
             selection();
-            */
 
             // Step 2
             /*
@@ -183,10 +179,10 @@ int main(int argc, char** argv)
             */
         }
     }
-
-    // Error in arguments statement
+    // Arguments error statement
     else
     {
         printf("ERROR : please enter 0 or 4 arguments for running program.\n");
+        fclose(qam_in_file);
     }
 }
