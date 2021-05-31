@@ -69,7 +69,12 @@ ButtonState read_button()
             if (loops >= 300)
                 return B_STATE_ALL_OFF;
 
-            button_value = read_button();
+            button_file = fopen(BUTTON_PATH, "r");
+            if (button_file != NULL)
+            {
+                fscanf(button_file, "%c", &button_value); // Getting state of button
+                fclose(button_file);   
+            }
 
             if (button_value == '0')
             {
@@ -85,8 +90,10 @@ ButtonState read_button()
             return B_STATE_ALL_ON;
         }
 
-        return B_STATE_NORMAL; // do nothing
+        return B_STATE_HIGH; // do nothing
     }
-
-    return B_STATE_NORMAL;
+    else 
+    {
+        return B_STATE_LOW;
+    }
 }

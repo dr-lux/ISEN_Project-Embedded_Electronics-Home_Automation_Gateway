@@ -65,7 +65,7 @@ void selection()
         shutdown_led(LED_PATH_BLUE);
         shutdown_led(LED_PATH_GREEN);
     }
-    else if (button_state == B_STATE_NORMAL && pushed_button == 0)
+    else if (button_state == B_STATE_LOW && pushed_button == 0)
     {
         printf("\n");
         // Invert red pipe statement
@@ -122,7 +122,7 @@ void selection()
         pushed_button = 1; // Declare we push the button
     }
         // Released button statement
-    else if (read_button() == '1' && pushed_button == 1)
+    else if (read_button() == B_STATE_HIGH && pushed_button == 1)
     {
         pushed_button = 0; // Declare we've released the button
     }
