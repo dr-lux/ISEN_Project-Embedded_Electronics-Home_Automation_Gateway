@@ -56,7 +56,6 @@ ButtonState read_button()
     else
     {
         printf("ERROR : Cannot open %s in function read_button\n", BUTTON_PATH);
-        return 0;
     }
 
     if (button_value == '1')
@@ -66,9 +65,6 @@ ButtonState read_button()
         unsigned int loops = 0;
         while (1)
         {
-            if (loops >= 300)
-                return B_STATE_ALL_OFF;
-
             button_file = fopen(BUTTON_PATH, "r");
             if (button_file != NULL)
             {
@@ -85,7 +81,11 @@ ButtonState read_button()
             loops++;
         }
 
-        if ((loops * 1000000) >= 200)
+        if (loops >= 3000)
+        {
+            return B_STATE_ALL_OFF;
+        }
+        if (loops >= 2000)
         {
             return B_STATE_ALL_ON;
         }

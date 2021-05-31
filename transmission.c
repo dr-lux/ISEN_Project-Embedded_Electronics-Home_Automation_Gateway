@@ -182,3 +182,8 @@ void commande_radio(char tube_fluo, char* etat_tube_fluo)
             printf("ERROR : Bad statement of tube_fluo variable in function commande_radio.\n");
     }
 }
+
+void blind()
+{
+    
+}

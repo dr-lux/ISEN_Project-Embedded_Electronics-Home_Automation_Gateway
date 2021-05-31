@@ -53,17 +53,19 @@ void selection()
     unsigned char button_state = read_button();
     if (button_state == B_STATE_ALL_ON)
     {
-        // set all leds to on
-        ignite_led(LED_PATH_RED);
-        ignite_led(LED_PATH_BLUE);
-        ignite_led(LED_PATH_GREEN);
+        // set all to on
+        trans_trame_433MHz('A', '1', '1', "9");
+        trans_trame_433MHz('B', '1', '1', "9");
+        trans_trame_433MHz('C', '1', '1', "9");
+        trans_trame_433MHz('D', '1', '1', "9");
     }
     else if (button_state == B_STATE_ALL_OFF)
     {
-        // set all leds off
-        shutdown_led(LED_PATH_RED);
-        shutdown_led(LED_PATH_BLUE);
-        shutdown_led(LED_PATH_GREEN);
+        // set all off
+        trans_trame_433MHz('A', '1', '0', "9");
+        trans_trame_433MHz('B', '1', '0', "9");
+        trans_trame_433MHz('C', '1', '0', "9");
+        trans_trame_433MHz('D', '1', '0', "9");
     }
     else if (button_state == B_STATE_LOW && pushed_button == 0)
     {
