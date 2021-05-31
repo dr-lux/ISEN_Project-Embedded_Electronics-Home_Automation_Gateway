@@ -122,7 +122,7 @@ void selection()
         pushed_button = 1; // Declare we push the button
     }
         // Released button statement
-    else if (read_button() == B_STATE_HIGH && pushed_button == 1)
+    else if (button_state == B_STATE_HIGH && pushed_button == 1)
     {
         pushed_button = 0; // Declare we've released the button
     }
