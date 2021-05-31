@@ -13,5 +13,6 @@
 #define QAM_PATH "/sys/class/gpio/gpio51/value"
 
 #define T_REF 333
+#define T_REF_ADAPTED 235
 
 #endif

@@ -35,19 +35,19 @@ void trans_data_433MHz(char data)
     switch (data)
     {
         case 'S':
-            GPIO_1to0(1 * T_REF, 32 * T_REF); // T1_T32
+            GPIO_1to0(1 * T_REF_ADAPTED, 32 * T_REF_ADAPTED); // T1_T32
             break;
         case '0':
-            GPIO_1to0(3 * T_REF, 1 * T_REF); // T3_T1
-            GPIO_1to0(3 * T_REF, 1 * T_REF); // T3_T1
+            GPIO_1to0(3 * T_REF_ADAPTED, 1 * T_REF_ADAPTED); // T3_T1
+            GPIO_1to0(3 * T_REF_ADAPTED, 1 * T_REF_ADAPTED); // T3_T1
             break;
         case '1':
-            GPIO_1to0(1 * T_REF, 3 * T_REF); // T1_T3
-            GPIO_1to0(3 * T_REF, 1 * T_REF); // T3_T1
+            GPIO_1to0(1 * T_REF_ADAPTED, 3 * T_REF_ADAPTED); // T1_T3
+            GPIO_1to0(3 * T_REF_ADAPTED, 1 * T_REF_ADAPTED); // T3_T1
             break;
         case '2':
-            GPIO_1to0(1 * T_REF, 3 * T_REF); // T1_T3
-            GPIO_1to0(1 * T_REF, 3 * T_REF); // T1_T3
+            GPIO_1to0(1 * T_REF_ADAPTED, 3 * T_REF_ADAPTED); // T1_T3
+            GPIO_1to0(1 * T_REF_ADAPTED, 3 * T_REF_ADAPTED); // T1_T3
             break;
         default:
             printf("ERROR : Bad statement with 'data' equal '%c' in function trans_data_433MHz.\n", data);
@@ -85,24 +85,23 @@ void trans_trame_433MHz(char house, char object, char activation, char* repetiti
         }
 
         // Transmitting object's address
-        char* objectSeq;
-        count = 3;
+        char object_seq[4];
         switch(object)
         {
             case '1':
-                objectSeq = (char[3]){'2', '1', '1'};
+                strcpy(object_seq, "211");
                 break;
             case '2':
-                objectSeq = (char[3]){'1', '2', '1'};
+                strcpy(object_seq, "121");
                 break;
             case '3':
-                objectSeq = (char[3]){'1', '1', '2'};
+                strcpy(object_seq, "112");
                 break;
             default:
                 printf("ERROR : Bad statement with 'object' equal '%c' in function trans_trame_433MHz.\n", object);
                 return;
         }
-        send_seq(objectSeq, count);
+        send_seq(object_seq, 3);
 
         // Transmitting fixed sequence
         send_seq(FIXED_SEQ, 4);
@@ -128,7 +127,7 @@ void trans_trame_433MHz(char house, char object, char activation, char* repetiti
     }
 }
 
-void commande_radio(char tube_fluo, char* etat_tube_fluo)
+void commande_radio(char tube_fluo, char* etat_tube_fluo) // NEED TO RENAME IN ENGLISH ALL FRENCH WORD AFTER PROJECT !!!
 {
     switch (tube_fluo)
     {
@@ -140,14 +139,14 @@ void commande_radio(char tube_fluo, char* etat_tube_fluo)
                 printf("Ignite the red pipe\n");
                 trans_trame_433MHz('C', '1', '1', "9");
             }
-                // Shutdown request statement
+            // Shutdown request statement
             else
             {
                 printf("Shutdown the red pipe\n");
                 trans_trame_433MHz('C', '1', '0', "9");
             }
             break;
-            // Green pipe's action statement
+        // Green pipe's action statement
         case 'G':
             // Ignite request statement
             if (strcmp(etat_tube_fluo, "1") == 0)
@@ -155,14 +154,14 @@ void commande_radio(char tube_fluo, char* etat_tube_fluo)
                 printf("Ignite the green pipe\n");
                 trans_trame_433MHz('B', '1', '1', "9");
             }
-                // Shutdown request statement
+            // Shutdown request statement
             else
             {
                 printf("Shutdown the green pipe\n");
                 trans_trame_433MHz('B', '1', '0', "9");
             }
             break;
-            // Blue pipe's action statement
+        // Blue pipe's action statement
         case 'B':
             // Ignite request statement
             if (strcmp(etat_tube_fluo, "1") == 0)
@@ -170,7 +169,7 @@ void commande_radio(char tube_fluo, char* etat_tube_fluo)
                 printf("Ignite the blue pipe\n");
                 trans_trame_433MHz('A', '1', '1', "9");
             }
-                // Shutdown request statement
+            // Shutdown request statement
             else
             {
                 printf("Shutdown the blue pipe\n");
