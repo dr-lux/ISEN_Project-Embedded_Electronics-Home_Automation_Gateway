@@ -1,5 +1,6 @@
 #include "transmission.h"
 
+#include <unistd.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -10,11 +11,45 @@
 /*
  * Radio sequences
 */
+char FIXED_SEQ[]   = {'1','2','1','1'};
+
 char A_HOUSE_SEQ[] = {'2','1','1','1'};
 char B_HOUSE_SEQ[] = {'1','2','1','1'};
 char C_HOUSE_SEQ[] = {'1','1','2','1'};
 char D_HOUSE_SEQ[] = {'1','1','1','2'};
-char FIXED_SEQ[]   = {'1','2','1','1'};
+char E_HOUSE_SEQ[] = {'0','0','0','0'};
+char F_HOUSE_SEQ[] = {'0','0','0','0'};
+char G_HOUSE_SEQ[] = {'0','0','0','0'};
+char H_HOUSE_SEQ[] = {'0','0','0','0'};
+char I_HOUSE_SEQ[] = {'0','0','0','0'};
+char J_HOUSE_SEQ[] = {'0','0','0','0'};
+char K_HOUSE_SEQ[] = {'2','1','2','1'};
+char L_HOUSE_SEQ[] = {'0','0','0','0'};
+char M_HOUSE_SEQ[] = {'0','0','0','0'};
+char N_HOUSE_SEQ[] = {'0','0','0','0'};
+char O_HOUSE_SEQ[] = {'0','0','0','0'};
+char P_HOUSE_SEQ[] = {'0','0','0','0'};
+
+char A_OBJ_SEQ[] = {'2','1','1','1'};
+char B_OBJ_SEQ[] = {'1','2','1','1'};
+char C_OBJ_SEQ[] = {'1','1','2','1'};
+char D_OBJ_SEQ[] = {'1','1','1','2'};
+char E_OBJ_SEQ[] = {'0','0','0','0'};
+char F_OBJ_SEQ[] = {'0','0','0','0'};
+char G_OBJ_SEQ[] = {'0','0','0','0'};
+char H_OBJ_SEQ[] = {'0','0','0','0'};
+char I_OBJ_SEQ[] = {'0','0','0','0'};
+char J_OBJ_SEQ[] = {'0','0','0','0'};
+char K_OBJ_SEQ[] = {'2','1','2','1'};
+char L_OBJ_SEQ[] = {'0','0','0','0'};
+char M_OBJ_SEQ[] = {'0','0','0','0'};
+char N_OBJ_SEQ[] = {'0','0','0','0'};
+char O_OBJ_SEQ[] = {'0','0','0','0'};
+char P_OBJ_SEQ[] = {'0','0','0','0'};
+
+
+char sequences[16][4];
+unsigned int sequencesIt = 0;
 
 /*
  * Sends the 'seq' to the radio module (through trans_data_433MHz),
@@ -26,7 +61,7 @@ void send_seq(char* seq, size_t count)
     
     for (size_t i = 0; i < count; i++)
     {
-        trans_data_433MHz(seq[i]);
+    	trans_data_433MHz(seq[i]);
     }
 }
 
@@ -55,13 +90,133 @@ void trans_data_433MHz(char data)
     }
 }
 
-void trans_trame_433MHz(char house, char object, char activation, char* repetition)
+unsigned int trans_tramev2_433MHz(char house, char object, char activation, char repetition)
 {
-    int nb_repetition = atoi(repetition);
-    int repetition_cycle;
+	char* houseSeq;
+	char* objectSeq;
+	char state = activation == 1 ? '1' : '2';
 
+	switch(house)
+	{
+		case 'A':
+			houseSeq = A_HOUSE_SEQ;
+			break;
+		case 'B':
+			houseSeq = B_HOUSE_SEQ;
+			break;
+		case 'C':
+			houseSeq = C_HOUSE_SEQ;
+			break;
+		case 'D':
+			houseSeq = D_HOUSE_SEQ;
+			break;
+		case 'E':
+			houseSeq = E_HOUSE_SEQ;
+			break;
+		case 'F':
+			houseSeq = F_HOUSE_SEQ;
+			break;
+		case 'G':
+			houseSeq = G_HOUSE_SEQ;
+			break;
+		case 'H':
+			houseSeq = H_HOUSE_SEQ;
+			break;
+		case 'I':
+			houseSeq = I_HOUSE_SEQ;
+			break;
+		case 'J':
+			houseSeq = J_HOUSE_SEQ;
+			break;
+		case 'K':
+			houseSeq = K_HOUSE_SEQ;
+			break;
+		case 'L':
+			houseSeq = L_HOUSE_SEQ;
+			break;
+		case 'M':
+			houseSeq = M_HOUSE_SEQ;
+			break;
+		case 'N':
+			houseSeq = N_HOUSE_SEQ;
+			break;
+		case 'O':
+			houseSeq = O_HOUSE_SEQ;
+			break;
+		case 'P':
+			houseSeq = P_HOUSE_SEQ;
+			break;
+		default:
+			return ERR_HOUSE_SEQ;
+	}
+
+	switch(object)
+	{
+		case 1:
+			objectSeq = A_OBJ_SEQ;
+			break;
+		case 2:
+			objectSeq = B_OBJ_SEQ;
+			break;
+		case 3:
+			objectSeq = C_OBJ_SEQ;
+			break;
+		case 4:
+			objectSeq = D_OBJ_SEQ;
+			break;
+		case 5:
+			objectSeq = E_OBJ_SEQ;
+			break;
+		case 6:
+			objectSeq = F_OBJ_SEQ;
+			break;
+		case 7:
+			objectSeq = G_OBJ_SEQ;
+			break;
+		case 9:
+			objectSeq = H_OBJ_SEQ;
+			break;
+		case 100:
+			objectSeq = I_OBJ_SEQ;
+			break;
+		case 10:
+			objectSeq = J_OBJ_SEQ;
+			break;
+		case 11:
+			objectSeq = K_OBJ_SEQ;
+			break;
+		case 12:
+			objectSeq = L_OBJ_SEQ;
+			break;
+		case 13:
+			objectSeq = M_OBJ_SEQ;
+			break;
+		case 14:
+			objectSeq = N_OBJ_SEQ;
+			break;
+		case 15:
+			objectSeq = O_OBJ_SEQ;
+			break;
+		default:
+			return ERR_OBJECT_SEQ;
+	}
+
+	for (char n = 0; n < repetition; n++)
+	{
+		send_seq(houseSeq, 4);
+		send_seq(objectSeq, 4);
+		send_seq(FIXED_SEQ, 3);
+		trans_data_433MHz(state);
+		trans_data_433MHz('S');
+	}
+
+	return ERR_SUCCESS;
+}
+
+void trans_trame_433MHz(char house, char object, char activation, char repetition)
+{
     // Transmitting frame
-    for (repetition_cycle = 1 ; repetition_cycle <= nb_repetition ; repetition_cycle++)
+    for (unsigned int repetition_cycle = 0 ; repetition_cycle < repetition ; repetition_cycle++)
     {
         // Transmitting house's address
         size_t count = 4;
@@ -89,19 +244,20 @@ void trans_trame_433MHz(char house, char object, char activation, char* repetiti
         count = 3;
         switch(object)
         {
-            case '1':
+            case 1:
                 objectSeq = (char[3]){'2', '1', '1'};
                 break;
-            case '2':
+            case 2:
                 objectSeq = (char[3]){'1', '2', '1'};
                 break;
-            case '3':
+            case 3:
                 objectSeq = (char[3]){'1', '1', '2'};
                 break;
             default:
                 printf("ERROR : Bad statement with 'object' equal '%c' in function trans_trame_433MHz.\n", object);
                 return;
         }
+
         send_seq(objectSeq, count);
 
         // Transmitting fixed sequence
@@ -137,14 +293,14 @@ void commande_radio(char tube_fluo, char* etat_tube_fluo)
             // Ignite request statement
             if (strcmp(etat_tube_fluo, "1") == 0)
             {
-                printf("Ignite the red pipe\n");
-                trans_trame_433MHz('C', '1', '1', "9");
+                printf("Turning on the red pipe\n");
+                trans_trame_433MHz('C', '1', '1', 9);
             }
                 // Shutdown request statement
             else
             {
-                printf("Shutdown the red pipe\n");
-                trans_trame_433MHz('C', '1', '0', "9");
+                printf("Shutting down the red pipe\n");
+                trans_trame_433MHz('C', '1', '0', 9);
             }
             break;
             // Green pipe's action statement
@@ -152,14 +308,14 @@ void commande_radio(char tube_fluo, char* etat_tube_fluo)
             // Ignite request statement
             if (strcmp(etat_tube_fluo, "1") == 0)
             {
-                printf("Ignite the green pipe\n");
-                trans_trame_433MHz('B', '1', '1', "9");
+                printf("Turning on the green pipe\n");
+                trans_trame_433MHz('B', '1', '1', 9);
             }
                 // Shutdown request statement
             else
             {
-                printf("Shutdown the green pipe\n");
-                trans_trame_433MHz('B', '1', '0', "9");
+                printf("Shutting down the green pipe\n");
+                trans_trame_433MHz('B', '1', '0', 9);
             }
             break;
             // Blue pipe's action statement
@@ -167,23 +323,87 @@ void commande_radio(char tube_fluo, char* etat_tube_fluo)
             // Ignite request statement
             if (strcmp(etat_tube_fluo, "1") == 0)
             {
-                printf("Ignite the blue pipe\n");
-                trans_trame_433MHz('A', '1', '1', "9");
+                printf("Turning on the blue pipe\n");
+                trans_trame_433MHz('A', '1', '1', 9);
             }
                 // Shutdown request statement
             else
             {
-                printf("Shutdown the blue pipe\n");
-                trans_trame_433MHz('A', '1', '0', "9");
+                printf("Shutting down the blue pipe\n");
+                trans_trame_433MHz('A', '1', '0', 9);
             }
             break;
             // Error statement
         default:
             printf("ERROR : Bad statement of tube_fluo variable in function commande_radio.\n");
+            break;
     }
 }
 
-void blind()
+void enumerate(int i, int n, char* array, char combinations[16][4])
 {
-    
+	if (i == n)
+	{
+		//printf("{");
+		for (int k = 0; k < n; k++)
+		{
+			//printf(" '%c',", array[k]);
+			combinations[sequencesIt][k] = array[k];
+		}
+		//printf("}\n");
+		sequencesIt++;
+		return;
+	}
+
+	array[i] = '1';
+	enumerate(i+1, n, array, combinations);
+	array[i] = '2';
+	enumerate(i+1, n, array, combinations);
+}
+
+void radio_broadcast()
+{
+	char bigseq[13] = { '2','1','2','1', '2','1','2','1', '2','1','1', '1', 'S' };
+	for (int i = 0; i < 9; i++)
+		send_seq(bigseq, 13);
+
+	return;
+
+
+	char combs1[16][4];
+    char* seq = (char[4]){ '1', '1', '1', '1' };
+    enumerate(0, 4, seq, combs1);
+
+    printf("\n---------------------------------------\n");
+
+    for (int a = 0; a < 16; a++)
+	{
+		printf("house %d -> {", a);
+		for (int c = 0; c < 4; c++)
+		{
+			printf("%c, ", combs1[a][c]);
+		}
+		printf("}\n");
+
+		for (int b = 0; b < 16; b++)
+		{
+			printf("object ->{ ");
+			for (int c = 0; c < 4; c++)
+			{
+				printf("%c, ", combs1[b][c]);
+			}
+			printf("}\n\n");
+
+			for (size_t rep =0; rep < 10; rep++)
+			{
+				send_seq(combs1[a], 4);
+				send_seq(combs1[b], 4);
+				send_seq(FIXED_SEQ, 3);
+				trans_data_433MHz('1');
+				trans_data_433MHz('S');
+			}
+
+			//usleep(500);
+		}
+	}
 }
