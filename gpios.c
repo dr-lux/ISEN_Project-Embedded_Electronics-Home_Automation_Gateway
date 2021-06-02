@@ -16,7 +16,6 @@ void GPIO_1to0(int delay1, int delay0)
         fprintf(qam_in_file, "0");
         fflush(qam_in_file);
         usleep(delay0);
-        fclose(qam_in_file);
     }
     else
     {
@@ -46,7 +45,7 @@ unsigned int read_potentiometer(void)
  */
 ButtonState read_button()
 {
-    unsigned char button_value = '0'; // HAVE BETTER THAN CHAR FOR VALUE ?
+    unsigned char button_value = '1'; // HAVE BETTER THAN CHAR FOR VALUE ?
     FILE* button_file = fopen(BUTTON_PATH, "r");
     if (button_file != NULL)
     {
@@ -58,12 +57,12 @@ ButtonState read_button()
         printf("ERROR : Cannot open %s in function read_button\n", BUTTON_PATH);
     }
 
-    if (button_value == '1')
+    if (button_value == '0')
     {
         // CAN YOU KEEP THE FILEPOINT OPEN ?
         // check if the shutdown is asked
         unsigned int loops = 0;
-        while (1)
+        while (button_value == '1')
         {
             button_file = fopen(BUTTON_PATH, "r");
             if (button_file != NULL)
@@ -71,29 +70,32 @@ ButtonState read_button()
                 fscanf(button_file, "%c", &button_value); // Getting state of button
                 fclose(button_file);   
             }
-
-            if (button_value == '0')
+            else
             {
-                break;
+                printf("ERROR : Cannot open %s in function read_button\n", BUTTON_PATH);
+                return 0;
             }
-
             usleep(100);
             loops++;
         }
-
+        // Button pushed during 3 seconds or more statement
         if (loops >= 3000)
         {
             return B_STATE_ALL_OFF;
         }
-        if (loops >= 2000)
+        // Button pushed during 2 seconds or more statement
+        else if (loops >= 2000)
         {
             return B_STATE_ALL_ON;
         }
-
-        return B_STATE_HIGH; // do nothing
+        // Button pushed during quick time statement
+        else
+        {
+            return B_STATE_LOW;
+        }
     }
     else 
     {
-        return B_STATE_LOW;
+        return B_STATE_HIGH;
     }
 }
