@@ -5,19 +5,24 @@
  *      Author: Titouan Allain
  */
 
-#include <stdio.h>
+#include <stdio.h> // PUSH THIS TO DEFINES.H ???
 
 #include "defines.h"
 #include "gpios.h"
 #include "transmission.h"
 #include "leds.h"
-// NEED TO PRAGMA INCLUDE ???
+#include "thread_led.h"
+// NEED TO PRAGMA INCLUDES ???
 
 int pushed_button = 0;
 
 char* state_pipe_red = "0";
 char* state_pipe_green = "0";
 char* state_pipe_blue = "0";
+
+float duty_red = 0.0;
+float duty_green = 0.0;
+float duty_blue = 0.0;
 
 void selection()
 {
@@ -135,7 +140,12 @@ void selection()
 
 int main(int argc, char** argv)
 {
-	FILE* qam_in_file = fopen(QAM_PATH, "w");
+    pthread_t thread_id;
+    pthread_create(&thread_id, NULL, thread_led, (void *) LED_ID_RED);
+    pthread_create(&thread_id, NULL, thread_led, (void *) LED_ID_BLUE);
+    pthread_create(&thread_id, NULL, thread_led, (void *) LED_ID_GREEN);
+
+    FILE* qam_in_file = fopen(QAM_PATH, "w");
 
     // Step 6
     // Connected mode statement
