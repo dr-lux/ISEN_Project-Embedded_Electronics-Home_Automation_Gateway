@@ -5,14 +5,13 @@
  *      Author: Titouan Allain
  */
 
-#include <stdio.h> // PUSH THIS TO DEFINES.H ???
+#include <stdio.h>
 
 #include "defines.h"
 #include "gpios.h"
 #include "transmission.h"
 #include "leds.h"
 #include "thread_led.h"
-// NEED TO PRAGMA INCLUDES ???
 
 int pushed_button = 0;
 
@@ -37,7 +36,7 @@ void selection()
         ignite_led(LED_PATH_RED);
         selected_color_id = LED_ID_RED;
     }
-        // Green LED statement
+    // Green LED statement
     else if ((4095/3) <= pot_value && pot_value < (2*4095/3)) // <= 33% and > 66%
     {
         shutdown_led(LED_PATH_RED);
@@ -45,7 +44,7 @@ void selection()
         ignite_led(LED_PATH_GREEN);
         selected_color_id = LED_ID_GREEN;
     }
-        // Blue LED statement
+    // Blue LED statement
     else // <= 66%
     {
         shutdown_led(LED_PATH_RED);
@@ -77,29 +76,29 @@ void selection()
     {
         printf("\n");
         // Invert red pipe statement
-        if (selected_color_id == 1)//LED_ID_RED) // NEED TO VERIFY IF THIS DEFINE IS FIXED
+        if (selected_color_id == LED_ID_RED)
         {
             // Switch off statement
             if (state_pipe_red == "1")
             {
                 state_pipe_red = "0";
             }
-                // Switch on statement
+            // Switch on statement
             else
             {
                 state_pipe_red = "1";
             }
             commande_radio('R', state_pipe_red);
         }
-            // Invert green pipe statement
-        else if (selected_color_id == 2)// LED_ID_GREEN)
+        // Invert green pipe statement
+        else if (selected_color_id == LED_ID_GREEN)
         {
             // Switch off statement
             if (state_pipe_green == "1")
             {
                 state_pipe_green = "0";
             }
-                // Switch on statement
+            // Switch on statement
             else
             {
                 state_pipe_green = "1";
@@ -107,26 +106,24 @@ void selection()
             commande_radio('G', state_pipe_green);
         }
         // Invert blue pipe statement
-        else if (selected_color_id == 3)//LED_ID_BLUE) // NEED TO TEST THIS MACRO WHEN WE FINISHED !!!
+        else if (selected_color_id == LED_ID_BLUE)
         {
             // Switch off statement
             if (state_pipe_blue == "1")
             {
                 state_pipe_blue = "0";
             }
-                // Switch on statement
+            // Switch on statement
             else
             {
                 state_pipe_blue = "1";
             }
             commande_radio('B', state_pipe_blue);
         }
-        // UNREACHABLE CODE !!!
         else
         {
             printf("ERROR : Bad statement of selected_color_id in function selection.\n");
         }
-        // END UNREACHABLE CODE !!!
         pushed_button = 1; // Declare we push the button
     }
     // Released button statement
@@ -136,10 +133,9 @@ void selection()
     }
 }
 
-
-
 int main(int argc, char** argv)
 {
+    // Calling thread for each LED
     pthread_t thread_id;
     pthread_create(&thread_id, NULL, thread_led, (void *) LED_ID_RED);
     pthread_create(&thread_id, NULL, thread_led, (void *) LED_ID_BLUE);
@@ -147,48 +143,18 @@ int main(int argc, char** argv)
 
     FILE* qam_in_file = fopen(QAM_PATH, "w");
 
-    // Step 6
     // Connected mode statement
     if (argc == 5) // 4 arguments entered
     {
-        // NEED TO ADD SECURITY WHEN WE FINISHED THE PROJECT
-        // WARNING -> casting char* to char (argv == char[][], an array of strings)
         trans_trame_433MHz(argv[1][0],argv[2][0],argv[3][0],argv[4]);
     }
     // Autonomous mode statement
     else if (argc <= 1)
     {
+        // Endless loop
         while (1)
         {
-            // Step 1 & Step 5 & Step 6
             selection();
-
-            // Step 2
-            /*
-            // Setting signal to high value
-            fprintf(qam_in_file, "1");
-            fflush(qam_in_file);
-            // Setting signal to low value
-            fprintf(qam_in_file, "0");
-            fflush(qam_in_file);
-            */
-
-            // Step 3
-            /*
-            // T1_T3
-            GPIO_1to0(1 * T_REF, 3 * T_REF);
-            // T3_T1
-            GPIO_1to0(3 * T_REF, 1 * T_REF);
-            // T1_T32
-            GPIO_1to0(1 * T_REF, 32 * T_REF);
-            */
-
-            // Step 4
-            /*
-            trans_data_433MHz('2');
-            trans_data_433MHz('1');
-            trans_data_433MHz('S');
-            */
         }
     }
     // Arguments error statement

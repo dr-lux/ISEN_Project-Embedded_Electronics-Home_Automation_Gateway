@@ -20,14 +20,9 @@ echo 1 > /sys/class/gpio/gpio48/unexport
 echo 1 > /sys/class/gpio/gpio48/export
 echo in > /sys/class/gpio/gpio48/direction
 
-# Potentiometer
-# echo 1 > /sys/bus/iio/devices/iio:device0/in_voltage3_raw
-# echo 1 > /sys/bus/iio/devices/iio:device0/in_voltage3_raw
-# echo out > /sys/bus/iio/devices/iio:device0/in_voltage3_raw
-
 # QAM
-# echo 1 > /sys/class/gpio/gpio48/unexport
-# echo 1 > /sys/class/gpio/gpio48/export
+echo 1 > /sys/class/gpio/gpio48/unexport
+echo 1 > /sys/class/gpio/gpio48/export
 echo in > /sys/class/gpio/gpio48/direction
 
 
