@@ -59,8 +59,6 @@ ButtonState read_button()
 
     if (button_value == '0')
     {
-        // CAN YOU KEEP THE FILEPOINT OPEN ?
-        // check if the shutdown is asked
         unsigned int loops = 0;
         while (button_value == '1')
         {

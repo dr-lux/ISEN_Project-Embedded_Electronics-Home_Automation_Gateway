@@ -12,27 +12,39 @@
 <?php
 
 if(isset($_POST['red_on'])) {
-    shell_exec("/root/project A 1 1 9");
+    shell_exec("/opt/project A 1 1 9");
 }
 
 if(isset($_POST['red_off'])) {
-    shell_exec("/root/project A 1 0 9");
+    shell_exec("/opt/project A 1 0 9");
 }
 
 if(isset($_POST['green_on'])) {
-    shell_exec("/root/project B 1 1 9");
+    shell_exec("/opt/project B 1 1 9");
 }
 
 if(isset($_POST['green_off'])) {
-    shell_exec("/root/project B 1 0 9");
+    shell_exec("/opt/project B 1 0 9");
 }
 
 if(isset($_POST['blue_on'])) {
-    shell_exec("/root/project C 1 1 9");
+    shell_exec("/opt/project C 1 1 9");
 }
 
 if(isset($_POST['blue_off'])) {
-    shell_exec("/root/project C 1 0 9");
+    shell_exec("/opt/project C 1 0 9");
+}
+
+if(isset($_POST['all_on'])) {
+    shell_exec("/opt/project A 1 1 9");
+    shell_exec("/opt/project B 1 1 9");
+    shell_exec("/opt/project C 1 1 9");
+}
+
+if(isset($_POST['all_off'])) {
+    shell_exec("/opt/project A 1 0 9");
+    shell_exec("/opt/project B 1 0 9");
+    shell_exec("/opt/project C 1 0 9");
 }
 
 ?>
@@ -60,7 +72,7 @@ if(isset($_POST['blue_off'])) {
            value="ALL ON"/>
 
     <input type="submit" name="all_off"
-           value="all OFF"/>
+           value="ALL OFF"/>
 </form>
 </head>
 
