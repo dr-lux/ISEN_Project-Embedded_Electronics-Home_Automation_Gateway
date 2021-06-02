@@ -55,7 +55,6 @@ ButtonState read_button()
     else
     {
         printf("ERROR : Cannot open %s in function read_button\n", BUTTON_PATH);
-        return 0;
     }
 
     if (button_value == '0')

@@ -55,6 +55,7 @@ void selection()
     // Ignite all pipes statements
     if (button_state == B_STATE_ALL_ON)
     {
+        // Sending the ignition trame for A1, B1 and C1 pipes
         trans_trame_433MHz('A', '1', '1', "9");
         trans_trame_433MHz('B', '1', '1', "9");
         trans_trame_433MHz('C', '1', '1', "9");
@@ -62,6 +63,7 @@ void selection()
     // Shutdown all pipes statement
     else if (button_state == B_STATE_ALL_OFF)
     {
+        // Sending the extinction trame for A1, B1 and C1 pipes
         trans_trame_433MHz('A', '1', '0', "9");
         trans_trame_433MHz('B', '1', '0', "9");
         trans_trame_433MHz('C', '1', '0', "9");
